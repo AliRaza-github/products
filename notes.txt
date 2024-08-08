@@ -1,0 +1,10 @@
+
+
+
+1. remove pass from response
+2. sendmail(to, content)   content is the whole msg contents including link
+3. verificationLink = `${baseUrl}/api/users/verify-email/:userId/:token`
+4. add a new field to user schema - field name = status, default value = pending
+
+
+

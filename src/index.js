@@ -9,8 +9,11 @@ const router = require("./routes/userRoute");
 app.use(express.json());
 
 app.use("/api/users", router);
-
-
+//
+app.get('/home', (req, res) => {
+    res.status(200).send('home vercel');
+  });
+//
 mongoose.connect(mongoUri).then(() => {
     app.listen(3000, () => {
         console.log("app is Running at port 3000 ");

@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 const userSchema = mongoose.Schema({
-    first_name: {
+    name: {
         type: String,
     },
-    last_name: {
-        type: String,
-    },
+    // last_name: {
+    //     type: String,
+    // },
     email: {
         type: String,
         required: true
@@ -14,16 +14,20 @@ const userSchema = mongoose.Schema({
         type: String,
         require: true
     },
-    email_verify: {
-        type: String,
-        default: false,
-    },
-    status: {
-        type: String,
-        default: 'pending'
-    },
-    email_verify_token: {
-        type: String
+    // email_verify: {
+    //     type: String,
+    //     default: false,
+    // },
+    // status: {
+    //     type: String,
+    //     default: 'pending'
+    // },
+    // email_verify_token: {
+    //     type: String
+    // }
+    profile_image:{
+        type:String,
+        default:null
     }
 },
     { timestamps: true })

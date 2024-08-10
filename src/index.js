@@ -1,4 +1,4 @@
-const serverless = require('serverless-http');
+// const serverless = require('serverless-http');
 require("dotenv").config();
 const mongoUri=process.env.MONGO_URI;
 const mongoose = require("mongoose");
@@ -16,12 +16,12 @@ app.get('/home', (req, res) => {
   });
 //
 mongoose.connect(mongoUri).then(() => {
-    // app.listen(3000, () => {
-        // console.log("app is Running at port 3000 ");
+    app.listen(3000, () => {
+        console.log("app is Running at port 3000 ");
         console.log("DB is connected")
-    // })
+    })
 }).catch((error) => {
     console.log("DB connection Error..", error)
 })
-module.exports = app;
-module.exports.handler = serverless(app);
+// module.exports = app;
+// module.exports.handler = serverless(app);

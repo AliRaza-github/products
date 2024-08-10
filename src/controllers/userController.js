@@ -112,6 +112,16 @@
 
 const User = require("../models/userModel");
 
+
+const getAll = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 const uploadImage = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -159,6 +169,7 @@ const register = async (req, res) => {
 };
 module.exports = {
   uploadImage,
-  register
+  register,
+  getAll
 };
 

@@ -112,7 +112,6 @@
 
 const User = require("../models/userModel");
 
-
 const getAll = async (req, res) => {
   try {
     const users = await User.find();

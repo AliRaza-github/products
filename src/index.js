@@ -16,10 +16,11 @@ app.get('/home', (req, res) => {
   });
 //
 mongoose.connect(mongoUri).then(() => {
-    app.listen(3000, () => {
-        console.log("app is Running at port 3000 ");
-       console.log("DB is connected")
-    })
+    console.log("DB is connected")
+    // app.listen(3000, () => {
+    //     console.log("app is Running at port 3000 ");
+    //    console.log("DB is connected")
+    // })
 }).catch((error) => {
     console.log("DB connection Error..", error)
 })

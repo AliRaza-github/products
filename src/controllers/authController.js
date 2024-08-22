@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 exports.adminLogin = async (req, res) => {
 
     const { user_name, password } = req.body;
+    console.log("data",req.body)
+    console.log("userName",req.body.user_name)
+    console.log("password",req.body.password)
 
     if (user_name !== process.env.ADMIN_USERNAME) {
         return res.status(401).json({ error: null, data: null, message: "Invalid username or password" })

@@ -1,174 +1,113 @@
-// const crypto = require("crypto");
-
-// const bcrypt = require("bcrypt");
-// const jwt = require("jsonwebtoken");
-
-
-// const jwtSecret = process.env.SECRET_KEY;
-// const salt = parseInt(process.env.PASSWORD_SALT)
-
-// const verifyEmail = require("../utils/sendEmail");
-
-
-// const registration = async (req, res) => {
-//   const { first_name, last_name, email, password } = req.body;
-
-
-//   try {
-//     const existingUser = await User.findOne({ email: email });
-//     if (existingUser) {
-//       return res
-//         .status(401)
-//         .json({ message:"Email already exist"});
-//     }
-
-
-//     const hashPassword = await bcrypt.hash(password,salt);
-//     const Token = crypto.randomBytes(16).toString("hex");
-
-//     const user = new User({
-//       first_name: first_name,
-//       last_name: last_name,
-//       email: email,
-//       password: hashPassword,
-//       email_verify_token: Token,
-//     });
-
-//     const savedUser = await user.save();
-//     const link = `${process.env.BASE_URL}api/users/verify-email/${savedUser._id}/${savedUser.email_verify_token}`;
-
-//     verifyEmail(savedUser.email, link);
-
-//     return res.status(200).json({
-//       message: "Verification email sent successfully"
-//     });
-//   } catch (error) {
-//     console.log('error in registration',error);
-//     return res.status(500).json({ message:"Error in registration"});
-//   }
-// };
-
-
-// const login = async (req, res) => {
-//   const { email, password } = req.body;
-
-
-//   try {
-//     const user = await User.findOne({ email:email});
-
-//     if (!user) {
-//       return res.status(401).json({ message: "Invalid username or password" });
-//     }
-//     if(user.status != 'active'){
-//       return res.status(401).json({ message: "Please verify your email" });
-//     }
-
-//     const matchPassword = await bcrypt.compare(password, user.password);
-//     if (!matchPassword) {
-//       return res.status(401).json({ message: "Invalid username or password" });
-//     }
-
-//     const token = jwt.sign(
-//       { email: user.email, id: user._id },
-//       jwtSecret
-//     );
-
-//    return res.status(201).json({
-//       first_name: user.first_name,
-//       last_name: user.last_name,
-//       email: user.email,
-//       jwt: token,
-//     });
-//   } catch (error) {
-//     console.log('error in login',error);
-//     return res.status(500).json({ message:"Error in login"});
-//   }
-// };
-
-
-
-
-// const activeUser = async (req, res) => {
-//   try {
-//     const id = req.params.id;
-//     const token = req.params.token;
-//     let user = await User.findOne({ _id: id, email_verify_token: token });
-//     if (!user) {
-//       return res.status(401).json({ message:"User not found"});
-//     }
-// // console.log("user..",user)
-//     user.status = 'active';
-//     user.email_verify = true;
-//     user.email_verify_token=undefined;
-//     await user.save();
-//     console.log("user:",user);
-//     return res.status(200).json({ message: "User verified successfully" });
-//   } catch (error) {
-//     console.log("error:", error);
-//     return res.status(500).json({ message: 'Error verifying email' });
-//   }
-// };
-
-
+const { validationResult } = require("express-validator");
+const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 const User = require("../models/userModel");
+const Notification = require("../models/notificationModel")
+const JWT_SECRET = process.env.SECRET_KEY
 
-const getAll = async (req, res) => {
-  try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-};
-
-const uploadImage = async (req, res) => {
-  try {
-    const { userId } = req.body;
-    const file = req.file;
-
-    if (!file) {
-      return res.status(400).json({ message: 'No file uploaded' });
-    }
-
-    // Find the user by ID
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Update the user's profile image URL
-    user.profileImage = file.path;
-    await user.save();
-
-    res.status(200).json({ message: 'Image uploaded successfully', profileImage: user.profileImage });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-};
-
-
+// Registration Function
 const register = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                error: errors.array(),
+                data: null,
+                message: "Registration error. Please try again or contact support."
+            });
+        }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists with this email' });
+        const { user_name, email, password, role } = req.body;
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({
+                error: "User already registered.",
+                data: null,
+                message: "User already registered."
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = new User({
+            user_name,
+            email,
+            password: hashedPassword,
+            role,
+        });
+
+        const savedUser = await user.save();
+
+        //create notifaction 
+        const notifaction = new Notification({
+            message: `New user registered: ${savedUser}. Awaiting approval.`
+        })
+        await notifaction.save();
+
+        return res.status(201).json({
+            error: null,
+            data: savedUser,
+            message: 'User registered successfully. Awaiting admin approval.'
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            error: error.message || error,
+            data: null,
+            message: "Registration error. Please try again or contact support."
+        });
     }
-    const newUser = new User({
-      name,
-      email,
-      password: password,
-    });
-    const user = await newUser.save();
-    res.status(201).json({ error: null, message: 'User registered successfully', userId: newUser._id, data: user });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error || error.message });
-  }
-};
-module.exports = {
-  uploadImage,
-  register,
-  getAll
 };
 
+// Login Function
+const login = async (req, res) => {
+    try {
+
+        // validate input 
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                error: errors.array(),
+                data: null,
+                message: "Login error."
+            });
+        }
+
+        const { email, password } = req.body;
+        // Check if the user exists
+        const user = await User.findOne({ email });
+
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        if (!user.is_apporved) {
+            return res.status(403).json({ error: 'Account not approved', data: null, message: 'Account not approved' });
+        }
+
+        // Generate a JWT token
+        const token = jwt.sign(
+            { user: user },
+            JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        return res.status(200).json({
+            error: null,
+            data: { token },
+            message: "Login successful."
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            error: error.message || error,
+            data: null,
+            message: "Login error."
+        });
+    }
+};
+
+
+module.exports = { register, login };

@@ -1,16 +1,17 @@
 const serverless = require('serverless-http');
-require("dotenv").config();
-const mongoUri=process.env.MONGO_URI;
 const mongoose = require("mongoose");
 const express = require("express");
+const authRoutes = require("./routes/authRoute");
+const userRoutes = require("./routes/userRoute");
+require("dotenv").config();
+const mongoUri=process.env.MONGO_URI;
 
 const app = express();
-
-const router = require("./routes/userRoute");
 app.use(express.json());
 
-app.use("/api/users", router);
-//
+app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
+
 app.get('/home', (req, res) => {
     res.status(200).send('home vercel');
   });
@@ -19,7 +20,6 @@ mongoose.connect(mongoUri).then(() => {
     console.log("DB is connected")
     // app.listen(3000, () => {
     //     console.log("app is Running at port 3000 ");
-    //    console.log("DB is connected")
     // })
 }).catch((error) => {
     console.log("DB connection Error..", error);

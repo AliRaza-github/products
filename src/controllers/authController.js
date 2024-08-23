@@ -79,7 +79,7 @@ const login = async (req, res) => {
         });
       }
 
-      if (!user.is_apporved) {
+      if (!user.is_approved) { // Corrected property name
         return res.status(403).json({
           error: 'Account not approved',
           data: null,
@@ -88,7 +88,7 @@ const login = async (req, res) => {
       }
 
       // Generate a token for the user
-      const token = jwt.sign({ id: user._id, role: 'endUser' }, process.env.JWT_SECRET, { expiresIn: '12h' });
+      const token = jwt.sign({ id: user._id, role: 'endUser' }, jwtSecret, { expiresIn: '12h' });
       return res.status(200).json({ error: null, token, role: 'endUser', message: "Login successfully" });
 
     } else {
@@ -96,18 +96,19 @@ const login = async (req, res) => {
       const adminUsername = process.env.ADMIN_USERNAME;
       const adminPassword = process.env.ADMIN_PASSWORD;
 
-      if (user_name === adminUsername && password === adminPassword) {
-        // Generate a token for admin
-        const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '12h' });
-        return res.status(200).json({ error: null, token, role: 'admin', message: "Login successfully" });
-      } else {
-        // If no match, return an error
+      // Check if either user_name or password is incorrect
+      if (user_name !== adminUsername || password !== adminPassword) {
         return res.status(401).json({
           error: 'Invalid credentials',
           data: null,
           message: 'Invalid credentials'
         });
       }
+
+      // If credentials match, generate a token for admin
+      const token = jwt.sign({ role: 'admin' }, jwtSecret, { expiresIn: '12h' });
+      return res.status(200).json({ error: null, token, role: 'admin', message: "Login successfully" });
+
     }
 
   } catch (error) {
@@ -119,6 +120,7 @@ const login = async (req, res) => {
     });
   }
 };
+
 
 
 module.exports = { register, login };

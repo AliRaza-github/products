@@ -1,12 +1,19 @@
 const serverless = require('serverless-http');
 const mongoose = require("mongoose");
 const express = require("express");
+const cors = require('cors');
 const authRoutes = require("./routes/authRoute");
 const userRoutes = require("./routes/userRoute");
+
 require("dotenv").config();
 const mongoUri=process.env.MONGO_URI;
 
 const app = express();
+app.use(cors({
+    origin: '*', // Allow any origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
 app.use(express.json());
 
 app.use("/api/users", userRoutes);

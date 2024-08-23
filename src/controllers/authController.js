@@ -100,14 +100,14 @@ const login = async (req, res) => {
         // Generate a token for admin
         const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '12h' });
         return res.json({ token, role: 'admin' });
-      }
-
+      }else{
       // If no match, return an error
       return res.status(401).json({
         error: 'Invalid credentials',
         data: null,
         message: 'Invalid credentials'
       });
+    }
     }
 
   } catch (error) {
@@ -122,4 +122,4 @@ const login = async (req, res) => {
 
 module.exports = { register, login };
 
-module.exports = { register, login };
+

@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    is_apporved: {
+    is_approved: {
         type: Boolean,
         default: false
     },

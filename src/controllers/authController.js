@@ -103,7 +103,7 @@ const login = async (req, res) => {
         //   data: null,
         //   message: 'Invalid credentials'
         // });
-        return res.status(200).json({ error: null, data:null, message: "Login successfully" });
+        return res.status(400).json({ error: null, data:null, message: "Invalid credentials" });
       }
 
       // If credentials match, generate a token for admin

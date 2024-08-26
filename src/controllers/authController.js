@@ -89,7 +89,7 @@ const login = async (req, res) => {
 
       // Generate a token for the user
       const token = jwt.sign({ id: user._id, role: 'endUser' }, jwtSecret, { expiresIn: '12h' });
-      return res.status(200).json({ error: null, token, role: 'endUser', message: "Login successfully" });
+      return res.status(200).json({ error: null, token, role: user.role, message: "Login successfully", redirectLink: user.role === 'admin' ? '/admin/dashboard' : '/settings/dashboard' });
 
     } else {
       // Authenticate as an admin using username and password
@@ -107,23 +107,24 @@ const login = async (req, res) => {
 
       // If credentials match, generate a token for admin
       const token = jwt.sign({ role: 'admin' }, jwtSecret, { expiresIn: '12h' });
-      return res.status(200).json({ error: null, token, role: 'admin', message: "Login successfully" });
+      return res.status(200).json({
+        error: null, token, role: 'admin', message: "Login successfully", redirectLink:'/admin/dashboard'});
 
-    }
+      }
 
   } catch (error) {
-    console.error('Error during login:', error);
-    return res.status(500).json({
-      error: 'Internal server error',
-      data: null,
-      message: 'Internal server error'
-    });
-  }
-};
+      console.error('Error during login:', error);
+      return res.status(500).json({
+        error: 'Internal server error',
+        data: null,
+        message: 'Internal server error'
+      });
+    }
+  };
 
 
 
 
-module.exports = { register, login };
+  module.exports = { register, login };
 
 

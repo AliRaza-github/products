@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const express = require("express");
 const cors = require('cors');
 const authRoutes = require("./routes/authRoute");
+const dashboardTabs = require("./routes/dashboardTabsRoute");
 
 require("dotenv").config();
 const mongoUri=process.env.MONGO_URI;
@@ -16,6 +17,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/dashboard", dashboardTabs);
 
 app.get('/home', (req, res) => {
     res.status(200).send('home vercel');

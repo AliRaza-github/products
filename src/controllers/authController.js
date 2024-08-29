@@ -91,7 +91,7 @@ const login = async (req, res) => {
       }
 
       // Generate a token for the user
-      const token = jwt.sign({ id: user._id, role: 'endUser' }, jwtSecret, { expiresIn: '12h' });
+      const token = jwt.sign({ id: user._id, role: 'endUser',name:user.user_name }, jwtSecret, { expiresIn: '12h' });
       return res.status(200).json({ error: null, token, role: user.role, message: "Login successfully", redirectLink: user.role === 'admin' ? '/admin/dashboard' : '/settings/dashboard' });
 
     } else {

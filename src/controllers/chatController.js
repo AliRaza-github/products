@@ -1,34 +1,45 @@
-// controllers/chatController.js
+const Pusher = require('pusher');
 const Message = require('../models/messageModel');
-const pusher = require('../utils/pusher');
+require('dotenv').config();
 
-// Handle sending a new message
-exports.sendMessage = async (req, res) => {
-  const { text, sender } = req.body;
+const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID,
+  key: process.env.PUSHER_KEY,
+  secret: process.env.PUSHER_SECRET,
+  cluster: process.env.PUSHER_CLUSTER,
+  useTLS: true,
+});
 
+exports.getMessages = async (req, res) => {
   try {
-    // Save message to MongoDB
-    const message = new Message({ text, sender });
-    await message.save();
-
-    // Trigger Pusher event
-    pusher.trigger('chat-channel', 'message', {
-      text,
-      sender
-    });
-
-    res.status(201).json({ message: 'Message sent' });
+    const messages = await Message.find().sort({ timestamp: 1 });
+    res.json(messages);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to send message' });
+    res.status(500).json({ error: 'Error fetching messages' });
   }
 };
 
-// Handle fetching all messages
-exports.getMessages = async (req, res) => {
+exports.sendMessage = async (req, res) => {
+  const data = req.user;
+  console.log("././././././././././..",data);
+  
+  const {  message } = req.body;
+
   try {
-    const messages = await Message.find().sort({ createdAt: -1 });
-    res.status(200).json(messages);
+    const newMessage = new Message({
+      
+      name:data.name, message 
+    });
+    const savedMessage = await newMessage.save();
+
+    pusher.trigger('chat-channel', 'new-message', {
+      name: savedMessage.name,
+      message: savedMessage.message,
+      timestamp: savedMessage.timestamp,
+    });
+
+    res.status(201).json(savedMessage);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch messages' });
+    res.status(500).json({ error: 'Error sending message' });
   }
 };

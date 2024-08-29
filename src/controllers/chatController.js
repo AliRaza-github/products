@@ -28,12 +28,12 @@ exports.sendMessage = async (req, res) => {
   try {
     const newMessage = new Message({
       
-      name:data.name, message 
+      role:data.role, message 
     });
     const savedMessage = await newMessage.save();
 
     pusher.trigger('chat-channel', 'new-message', {
-      name: savedMessage.name,
+      role: savedMessage.role,
       message: savedMessage.message,
       timestamp: savedMessage.timestamp,
     });

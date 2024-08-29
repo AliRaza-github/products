@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
-  name: {
+  role: {
     type: String,
     required: true,
     trim: true

@@ -21,7 +21,6 @@ exports.getMessages = async (req, res) => {
 
 exports.sendMessage = async (req, res) => {
   const data = req.user;
-  console.log("././././././././././..",data);
   
   const {  message } = req.body;
 

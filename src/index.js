@@ -40,6 +40,8 @@
 //   console.log("DB connection Error..", error);
 // })
 
+
+
 const mongoose = require("mongoose");
 const express = require("express");
 const cors = require('cors');
@@ -52,6 +54,7 @@ const chatRoutes = require('./routes/chatRoute');
 const notification = require("./routes/notificationRoute");
 const admin = require("./routes/adminRoutes");
 const bookTour = require("./routes/bookingTourRoute");
+const socketController = require('./controllers/socketController'); // Import the WebSocket controller
 
 require("dotenv").config();
 const mongoUri = process.env.MONGO_URI;
@@ -60,14 +63,14 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:3001', // Allow this origin for Socket.IO
+    origin: 'http://localhost:3001', // Update to match your frontend URL
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization']
   }
 });
 
 app.use(cors({
-  origin: 'http://localhost:3001', // Allow this origin for CORS
+  origin: 'http://localhost:3001', // Update to match your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -84,19 +87,8 @@ app.get('/home', (req, res) => {
   res.status(200).send('home vercel');
 });
 
-// Set up Socket.IO connection
-io.on('connection', (socket) => {
-  console.log('A user connected with ID:', socket.id);
-
-  socket.on('message', (msg) => {
-    console.log('Message received:', msg);
-    io.emit('message', msg); // Broadcast message to all clients
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected with ID:', socket.id);
-  });
-});
+// Set up Socket.IO
+socketController(io); // Initialize WebSocket controller
 
 mongoose.connect(mongoUri).then(() => {
   console.log("DB is connected");

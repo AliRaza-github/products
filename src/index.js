@@ -40,7 +40,6 @@
 //   console.log("DB connection Error..", error);
 // })
 
-
 const mongoose = require("mongoose");
 const express = require("express");
 const cors = require('cors');
@@ -61,14 +60,14 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:3001', // React app URL
+    origin: 'http://localhost:3001', // Allow this origin for Socket.IO
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization']
   }
 });
 
 app.use(cors({
-  origin: 'http://localhost:3001', // React app URL
+  origin: 'http://localhost:3001', // Allow this origin for CORS
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -87,7 +86,7 @@ app.get('/home', (req, res) => {
 
 // Set up Socket.IO connection
 io.on('connection', (socket) => {
-  console.log('A user connected');
+  console.log('A user connected with ID:', socket.id);
 
   socket.on('message', (msg) => {
     console.log('Message received:', msg);
@@ -95,7 +94,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('User disconnected');
+    console.log('User disconnected with ID:', socket.id);
   });
 });
 

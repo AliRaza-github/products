@@ -14,7 +14,7 @@ const messageSchema = new mongoose.Schema({
   timestamp: {
     type: Date,
     default: Date.now
-  }
+  } 
 });
 
 // Create and export the Message model

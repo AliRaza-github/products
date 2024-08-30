@@ -13,7 +13,6 @@ const verifyRole = (roles = []) => (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        console.log("data", decoded);
 
         req.user = decoded; // Attach user info to request
         if (roles.length && roles.includes(decoded.role)) {

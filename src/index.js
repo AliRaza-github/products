@@ -47,6 +47,7 @@ const cors = require('cors');
 const http = require('http');
 const socketIo = require('socket.io');
 const jwt = require('jsonwebtoken');
+const authRoutes = require("./routes/authRoute")
 require("dotenv").config();
 const mongoUri = process.env.MONGO_URI;
 
@@ -66,6 +67,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
+
+app.use("/api/auth", authRoutes);
 
 // Socket.IO setup
 io.on('connection', (socket) => {

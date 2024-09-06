@@ -4,10 +4,11 @@ const express = require("express");
 const cors = require('cors');
 const authRoutes = require("./routes/authRoute");
 const dashboardTabs = require("./routes/dashboardTabsRoute");
-const chatRoutes = require('./routes/chatRoute');
 const notification = require("./routes/notificationRoute");
 const admin = require("./routes/adminRoutes");
 const bookTour = require("./routes/bookingTourRoute");
+const bookSeat = require("./routes/bookingSeatRoute");
+const plan = require("./routes/planRoute");
 
 require("dotenv").config();
 const mongoUri = process.env.MONGO_URI;
@@ -24,14 +25,15 @@ app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardTabs);
 app.use("/api", notification);
 app.use("/api/admin", admin);
-app.use('/api/chat', chatRoutes);
 app.use('/api/tour', bookTour);
+app.use('/api/seat', bookSeat);
+app.use('/api/plan', plan);
 
 app.get('/home', (req, res) => {
   res.status(200).send('home vercel');
 });
 //
-mongoose.connect(mongoUri).then(() => {
+mongoose.connect(mongoUri).then(() => { 
   console.log("DB is connected")
   app.listen(3000, () => {
     console.log("app is Running at port 3000 ");

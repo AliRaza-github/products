@@ -212,6 +212,15 @@ const getTabs = async (req, res) => {
             });
         }
 
+        if (userRole === 'admin'){
+            tabsData.push ({
+                title:'Plans',
+                data:{
+                    
+                }
+            })
+        }
+
         // Define tabs based on user role
         if (userRole === 'admin') {
             const cubicleBookings = bookingData.filter(booking => booking.type === 'Cubicle');

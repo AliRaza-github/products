@@ -16,7 +16,7 @@ exports.getAllPlan = async (req, res) => {
         const plan = await Plan.find();
         return res.status(200).json({ error: null, data: plan, message: "Plans retrive successfully" });
     } catch (error) {
-        return res.status(500).json({ error: error || error.message, data: null, message: "Error in retriving  all plan." });
+        return res.status(500).json({ error: error || error.message, data: null, message: "Error in retriving  plans list." });
     }
 }
 
